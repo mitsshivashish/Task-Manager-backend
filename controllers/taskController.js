@@ -197,7 +197,7 @@ const updateTask = async (req, res) => {
             const newUsers = await User.find({ _id: { $in: newlyAssignedUserIds } });
             for (const user of newUsers) {
                 const subject = '🎉 New Task Just Landed On Your Desk!';
-                const dashboardUrl = "http://your-app-url.com/user/dashboard"; // Update as needed
+                const dashboardUrl = "https://task-manager-frontend-three-bay.vercel.app/"; // Update as needed
                 const html = `
 <div style=\"background:#f3f0ff;padding:0;margin:0;font-family:sans-serif;\">
   <div style=\"max-width:420px;margin:30px auto;background:#181828;border-radius:18px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);\">

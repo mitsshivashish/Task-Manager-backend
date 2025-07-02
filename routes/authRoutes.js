@@ -27,14 +27,14 @@ Router.post("/upload-image" , upload.single("image") , async (req , res) => {
             crop: "scale"
         });
 
-        console.log('Cloudinary upload successful:', result.secure_url);
+        // console.log('Cloudinary upload successful:', result.secure_url);
 
         // Delete local file after upload
         const fs = require('fs');
         try {
             if (fs.existsSync(req.file.path)) {
                 fs.unlinkSync(req.file.path);
-                console.log('Local file deleted:', req.file.path);
+                // console.log('Local file deleted:', req.file.path);
             }
         } catch (deleteError) {
             console.error('Error deleting local file:', deleteError);

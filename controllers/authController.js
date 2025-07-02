@@ -206,8 +206,8 @@ const getUserDetails = async (req , res) => {
 // @access Private (JWT token)
 const updateUserDetails = async (req , res) => {
     try {
-        console.log('Update profile request body:', req.body);
-        console.log('User ID:', req.user.id);
+        // console.log('Update profile request body:', req.body);
+        // console.log('User ID:', req.user.id);
         
         const user = await User.findById(req.user.id);
 
@@ -215,7 +215,7 @@ const updateUserDetails = async (req , res) => {
             return res.status(404).json({message : "User not found"})
         }
         
-        console.log('Current user profile image:', user.profileImageUrl);
+        // console.log('Current user profile image:', user.profileImageUrl);
 
         // Update user fields
         if (req.body.name) user.name = req.body.name;
@@ -234,11 +234,11 @@ const updateUserDetails = async (req , res) => {
 
         const updatedUser = await user.save();
         
-        console.log('Profile updated successfully:', {
-            name: updatedUser.name,
-            email: updatedUser.email,
-            profileImageUrl: updatedUser.profileImageUrl
-        });
+        // console.log('Profile updated successfully:', {
+        //     name: updatedUser.name,
+        //     email: updatedUser.email,
+        //     profileImageUrl: updatedUser.profileImageUrl
+        // });
 
         res.json({
             _id: updatedUser._id,
