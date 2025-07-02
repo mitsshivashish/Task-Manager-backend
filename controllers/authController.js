@@ -206,20 +206,26 @@ const getUserDetails = async (req , res) => {
 // @access Private (JWT token)
 const updateUserDetails = async (req , res) => {
     try {
+        console.log('Update profile request body:', req.body);
+        console.log('User ID:', req.user.id);
+        
         const user = await User.findById(req.user.id);
 
         if (!user) {
             return res.status(404).json({message : "User not found"})
         }
+        
+        console.log('Current user profile image:', user.profileImageUrl);
 
-        // Require profile image
-        if (!req.body.profileImageUrl && !user.profileImageUrl) {
+        // Update user fields
+        if (req.body.name) user.name = req.body.name;
+        if (req.body.email) user.email = req.body.email;
+        if (req.body.profileImageUrl) user.profileImageUrl = req.body.profileImageUrl;
+        
+        // Ensure user has a profile image (either existing or new)
+        if (!user.profileImageUrl) {
             return res.status(400).json({ message: "Profile image is required." });
         }
-
-        user.name = req.body.name || user.name;
-        user.email = req.body.email || user.email;
-        user.profileImageUrl = req.body.profileImageUrl || user.profileImageUrl;
 
         if (req.body.password) {
             const salt = await bcrypt.genSalt(10);
@@ -227,6 +233,12 @@ const updateUserDetails = async (req , res) => {
         }
 
         const updatedUser = await user.save();
+        
+        console.log('Profile updated successfully:', {
+            name: updatedUser.name,
+            email: updatedUser.email,
+            profileImageUrl: updatedUser.profileImageUrl
+        });
 
         res.json({
             _id: updatedUser._id,

@@ -15,8 +15,10 @@ Router.put('/profile' ,protect, updateUserDetails)
 Router.post("/upload-image" , upload.single("image") , async (req , res) => {
     try {
         if (!req.file) {
-            return res.status(404).json({message : "No File Uploaded"})
+            return res.status(400).json({message : "No File Uploaded"})
         }
+
+        console.log('File uploaded to:', req.file.path);
 
         // Upload to Cloudinary
         const result = await cloudinary.uploader.upload(req.file.path, {
@@ -25,14 +27,37 @@ Router.post("/upload-image" , upload.single("image") , async (req , res) => {
             crop: "scale"
         });
 
+        console.log('Cloudinary upload successful:', result.secure_url);
+
         // Delete local file after upload
         const fs = require('fs');
-        fs.unlinkSync(req.file.path);
+        try {
+            if (fs.existsSync(req.file.path)) {
+                fs.unlinkSync(req.file.path);
+                console.log('Local file deleted:', req.file.path);
+            }
+        } catch (deleteError) {
+            console.error('Error deleting local file:', deleteError);
+            // Continue anyway, the file will be cleaned up later
+        }
 
         res.status(200).json({imageUrl: result.secure_url})
     } catch (error) {
-        console.error('Cloudinary upload error:', error);
-        res.status(500).json({message: "Error uploading image"})
+        console.error('Upload error:', error);
+        
+        // Try to delete local file if it exists
+        if (req.file && req.file.path) {
+            const fs = require('fs');
+            try {
+                if (fs.existsSync(req.file.path)) {
+                    fs.unlinkSync(req.file.path);
+                }
+            } catch (deleteError) {
+                console.error('Error deleting local file after error:', deleteError);
+            }
+        }
+        
+        res.status(500).json({message: "Error uploading image", error: error.message})
     }
 })
 
