@@ -1,3 +1,5 @@
 node_modules
 .env
 uploads
+migrateImages.js
+resetImages.js
