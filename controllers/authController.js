@@ -405,4 +405,74 @@ const updateRoleAndOrg = async (req, res) => {
     }
 };
 
-module.exports = {RegisterUser , loginUser , getUserDetails , updateUserDetails, forgotPassword, resetPassword, verifyOTP, verifyRegistrationOTP, updateRoleAndOrg}
+// @desc Resend Registration OTP
+// @route POST /api/v1/auth/resend-registration-otp
+// @access Public
+const resendRegistrationOTP = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        if (!email) {
+            return res.status(400).json({ message: 'Email is required.' });
+        }
+
+        // Check if there's a pending registration for this email
+        const pendingUser = await PendingUser.findOne({ email });
+        
+        if (!pendingUser) {
+            return res.status(400).json({ message: 'No pending registration found for this email.' });
+        }
+
+        // Generate new OTP
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+
+        // Update the pending user with new OTP
+        pendingUser.registrationOTP = otp;
+        pendingUser.registrationOTPExpires = otpExpires;
+        await pendingUser.save();
+
+        // Send OTP email
+        const regHtml = `
+<div style="background:#f3f0ff;padding:0;margin:0;font-family:sans-serif;">
+  <div style="max-width:420px;margin:30px auto;background:#181828;border-radius:18px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+    <div style="padding:32px 32px 0 32px;text-align:center;">
+      <img src=\"https://cdn-icons-png.flaticon.com/512/747/747545.png\" alt=\"Verify Email\" style=\"width:70px;margin-bottom:16px;\" />
+      <h2 style=\"color:#fff;font-size:1.5rem;margin-bottom:8px;\">Verify Your Email</h2>
+    </div>
+    <div style=\"background:#23233b;padding:24px 32px;border-radius:12px;margin:24px 24px 0 24px;\">
+      <p style=\"color:#fff;font-size:1rem;margin:0 0 12px 0;\">Hi <b>${pendingUser.name}</b> 👋,</p>
+      <p style=\"color:#fff;font-size:1rem;margin:0 0 12px 0;\">
+        Here's your new OTP to verify your email address and complete your registration:
+      </p>
+      <div style=\"background:#fff;color:#23233b;font-size:2rem;font-weight:bold;letter-spacing:4px;padding:12px 0;border-radius:8px;margin:18px 0;\">
+        ${otp}
+      </div>
+      <p style=\"color:#fff;font-size:1rem;margin:0 0 12px 0;\">
+        This OTP is valid for 10 minutes. If you didn't request this, you can safely ignore this email.
+      </p>
+    </div>
+    <div style=\"padding:24px 32px 32px 32px;text-align:center;\">
+      <p style=\"color:#fff;font-size:0.95rem;margin:0;\">Happy to have you on board! 🎉</p>
+      <p style=\"color:#fff;font-size:0.95rem;margin:0;\">Task Manager Team</p>
+    </div>
+  </div>
+  <div style=\"text-align:center;margin:18px 0 0 0;\">
+    <small style=\"color:#888;\">Task Manager &copy; ${new Date().getFullYear()}</small>
+  </div>
+</div>
+`;
+        await sendEmail(
+            email,
+            'Your New OTP for Registration',
+            `Your new OTP is: ${otp}. It is valid for 10 minutes.`,
+            regHtml
+        );
+
+        res.status(200).json({ message: 'New OTP sent to your email.' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error: error.message });
+    }
+};
+
+module.exports = {RegisterUser , loginUser , getUserDetails , updateUserDetails, forgotPassword, resetPassword, verifyOTP, verifyRegistrationOTP, updateRoleAndOrg, resendRegistrationOTP}

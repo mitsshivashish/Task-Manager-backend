@@ -1,5 +1,5 @@
 const express = require('express');
-const { RegisterUser, loginUser, getUserDetails, updateUserDetails, forgotPassword, resetPassword, verifyOTP, verifyRegistrationOTP, updateRoleAndOrg } = require('../controllers/authController');
+const { RegisterUser, loginUser, getUserDetails, updateUserDetails, forgotPassword, resetPassword, verifyOTP, verifyRegistrationOTP, updateRoleAndOrg, resendRegistrationOTP } = require('../controllers/authController');
 const { protect } = require('../middlewares/authMiddleware');
 const upload = require('../middlewares/uploadMiddleware');
 const passport = require('passport');
@@ -9,6 +9,7 @@ const cloudinary = require('../utils/cloudinary');
 //Auth Routes
 Router.post('/register' , RegisterUser)
 Router.post('/login' , loginUser)
+Router.post('/resend-otp', resendRegistrationOTP);
 Router.get('/profile' ,protect, getUserDetails)
 Router.put('/profile' ,protect, updateUserDetails)
 
@@ -68,6 +69,13 @@ Router.post('/reset-password', resetPassword);
 
 // Registration OTP verification
 Router.post('/verify-registration-otp', verifyRegistrationOTP);
+
+// Test route
+Router.post('/test-route', (req, res) => {
+    res.json({ message: 'Test route works!' });
+});
+
+
 
 // Google OAuth Routes
 Router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
