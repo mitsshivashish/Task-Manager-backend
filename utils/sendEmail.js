@@ -10,6 +10,8 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+console.log("Using SMTP:", process.env.EMAIL_USER);
+
 const sendEmail = async (to, subject, text, html) => {
   await transporter.sendMail({
     from: process.env.EMAIL_USER,
@@ -19,5 +21,6 @@ const sendEmail = async (to, subject, text, html) => {
     html,
   });
 };
+
 
 module.exports = sendEmail;
