@@ -100,12 +100,16 @@ const RegisterUser = async (req , res) => {
   </div>
 </div>
 `;
-        sendEmail(
-            email,
-            'Your OTP for Registration',
-            `Your OTP is: ${otp}. It is valid for 10 minutes.`,
-            regHtml
-        );
+sendEmail(
+    email,
+    'Your OTP for Registration',
+    `Your OTP is: ${otp}. It is valid for 10 minutes.`,
+    regHtml
+ ).then(() => {
+    console.log("OTP email sent successfully");
+ }).catch((err) => {
+    console.error("OTP Email Error:", err);
+ });
 
         res.status(200).json({ message: 'OTP sent to your email. Please verify to complete registration.' });
     } catch (error) {
