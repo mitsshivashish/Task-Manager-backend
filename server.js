@@ -94,6 +94,10 @@ app.get('/api/org-code', (req, res) => {
   res.json({ orgCode: process.env.ORG_CODE || null });
 });
 
+app.get("/api/health", (req, res) => {
+  res.status(200).send("OK");
+});
+
 //Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

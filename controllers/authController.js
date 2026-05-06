@@ -100,7 +100,7 @@ const RegisterUser = async (req , res) => {
   </div>
 </div>
 `;
-        await sendEmail(
+        sendEmail(
             email,
             'Your OTP for Registration',
             `Your OTP is: ${otp}. It is valid for 10 minutes.`,
@@ -298,7 +298,7 @@ const forgotPassword = async (req, res) => {
   </div>
 </div>
 `;
-        await sendEmail(
+        sendEmail(
           user.email,
           'Your OTP for Password Reset',
           `Your OTP is: ${otp}. It is valid for 10 minutes.`,
@@ -462,7 +462,7 @@ const resendRegistrationOTP = async (req, res) => {
   </div>
 </div>
 `;
-        await sendEmail(
+        sendEmail(
             email,
             'Your New OTP for Registration',
             `Your new OTP is: ${otp}. It is valid for 10 minutes.`,
