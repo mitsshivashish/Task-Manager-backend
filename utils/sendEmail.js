@@ -21,7 +21,7 @@ console.log("Using SMTP:", process.env.EMAIL_USER);
 
 const sendEmail = async (to, subject, text, html) => {
   await transporter.sendMail({
-    from: process.env.EMAIL_USER,
+    from: process.env.EMAIL_FROM,
     to,
     subject,
     text,
